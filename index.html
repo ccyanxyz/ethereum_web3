@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <!--<script src="./node_modules/web3/dist/web3.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>Courses</h1>
+
+        <h2 id="instructor"></h2>
+		<span id="insTrans"></span>
+		<hr>
+
+		<img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+
+        <label for="fname" class="col-lg-2 control-label">First Name</label>
+        <input id="fname" type="text">
+
+        <label for="lname" class="col-lg-2 control-label">Last Name</label>
+        <input id="lname" type="text">
+
+        <label for="age" class="col-lg-2 control-label">Age</label>
+        <input id="age" type="text">
+
+        <button id="button">Update</button>
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+		if(typeof web3 !== 'undefined'){
+			web3 = new Web3(web3.currentProvider);
+		} else {
+			web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+			console.log(web3.eth.accounts[0]);
+			console.log(web3.eth.accounts.length);
+		}
+
+		web3.eth.defaultAccount = web3.eth.accounts[0];
+		
+		var courseContract = web3.eth.contract([
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "fname",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "lname",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "age",
+				"type": "uint256"
+			}
+		],
+		"name": "setInfo",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_address",
+				"type": "address"
+			},
+			{
+				"name": "_age",
+				"type": "uint256"
+			},
+			{
+				"name": "_fname",
+				"type": "bytes16"
+			},
+			{
+				"name": "_lname",
+				"type": "bytes16"
+			}
+		],
+		"name": "setInstructor",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "countInstructors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "getInstructor",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bytes16"
+			},
+			{
+				"name": "",
+				"type": "bytes16"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getInstructors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "instructorAccts",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+]);
+	
+		var course = courseContract.at('0x0d2fdecffaa18ece7faf48dd76f958647be92552');
+	
+		console.log(course);
+	
+		var setInfoEvent = course.setInfo({}, 'latest');
+		
+		setInfoEvent.watch(function(error, result){
+			if(!error){
+				if(result.blockHash != $("#instrans").html())
+					$("#loader").hide();
+				$("#insTrans").html('Block hash: ' + result.blockHash);
+
+				$("#instructor").html(web3.toAscii(result.args.fname) + ' ' + web3.toAscii(result.args.lname) + ', ' + result.args.age + ' years old')
+			} else {
+				$("#loader").hide();
+				console.log(error);
+			}
+		});
+		
+		course.countInstructors((err, ret) => {
+			if(ret){
+				$("#countIns").html(ret.c + ' Instructors');
+			}
+		});
+		
+		$("#button").click(function(){
+			$("#loader").show();
+			course.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fname").val(), $("#lname").val(), (err, ret) => {
+				if(err)
+					$("#loader").hide();
+			});
+		});
+	
+    </script>
+
+</body>
+</html>
