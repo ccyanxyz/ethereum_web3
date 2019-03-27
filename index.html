@@ -52,28 +52,6 @@
 		
 		var courseContract = web3.eth.contract([
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "fname",
-				"type": "bytes16"
-			},
-			{
-				"indexed": false,
-				"name": "lname",
-				"type": "bytes16"
-			},
-			{
-				"indexed": false,
-				"name": "age",
-				"type": "uint256"
-			}
-		],
-		"name": "setInfo",
-		"type": "event"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -98,6 +76,28 @@
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "fname",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "lname",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "age",
+				"type": "uint256"
+			}
+		],
+		"name": "setInfo",
+		"type": "event"
 	},
 	{
 		"constant": true,
@@ -175,7 +175,7 @@
 	}
 ]);
 	
-		var course = courseContract.at('0x0d2fdecffaa18ece7faf48dd76f958647be92552');
+		var course = courseContract.at('0xc0a5eafde0637fe3c124029b9dbb85a5edeb3e37');
 	
 		console.log(course);
 	

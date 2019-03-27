@@ -1,10 +1,10 @@
-pragma solidity ^0.4.18;
+pragma solidity >=0.5.0 <0.6.0;
 
 
 contract Owned {
 	address owner;
 
-	function Owned() public {
+	constructor() public {
 		owner = msg.sender;
 	}
 
@@ -27,7 +27,7 @@ contract Courses is Owned {
 	event setInfo(bytes16 fname, bytes16 lname, uint age);
 
 	function setInstructor(address _address, uint _age, bytes16 _fname, bytes16 _lname) onlyOwner public {
-		var instructor = instructors[_address];
+		Instructor storage instructor = instructors[_address];
 		instructor.age = _age;
 		instructor.fname = _fname;
 		instructor.lname = _lname;
@@ -36,7 +36,7 @@ contract Courses is Owned {
 		emit setInfo(_fname, _lname, _age);
 	}
 
-	function getInstructors() view public returns(address[]) {
+	function getInstructors() view public returns(address[] memory) {
 		return instructorAccts;
 	}
 
